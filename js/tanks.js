@@ -26,7 +26,7 @@ var eurecaClientSetup = function() {
 		eurecaServer = proxy;
 	});
 	
-
+	
 	//methods defined under "exports" namespace become available in the server side
 	
 	eurecaClient.exports.setId = function(id) 
@@ -52,9 +52,11 @@ var eurecaClientSetup = function() {
 		if (i == myId) return; //this is me
 		
 		console.log('SPAWN');
-		var tnk = new Tank(i, game, enemy);
+		var tnk = new Tank(i, game, tank);
 		tanksList[i] = tnk;
 	}
+	
+}
 	
 	eurecaClient.exports.updateState = function(id, state)
 	{
@@ -340,6 +342,22 @@ function update () {
 function bulletHitPlayer (enemy, bullet) {
 
     bullet.kill();
+    enemy.killing;
+}
+
+function bulletHitEnemy (enemy, bullet) {
+
+    bullet.kill();
+
+    var destroyed = tanksList[id].damage();
+
+    if (destroyed)
+    {
+        var explosionAnimation = explosions.getFirstExists(false);
+        explosionAnimation.reset(tank.x, tank.y);
+        explosionAnimation.play('kaboom', 30, false, true);
+    }
+
 }
 
 function render (){}
