@@ -57,14 +57,6 @@
 	"sourceSize": {"w":64,"h":64}
 },
 {
-	"filename": "tracks",
-	"frame": {"x":48,"y":80,"w":24,"h":12},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":12},
-	"sourceSize": {"w":24,"h":12}
-},
-{
 	"filename": "turret",
 	"frame": {"x":0,"y":80,"w":48,"h":28},
 	"rotated": false,

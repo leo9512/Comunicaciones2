@@ -98,7 +98,7 @@ Tank = function (index, game, player) {
     var x = game.world.randomX;
     var y = game.world.randomY;
     this.game = game;
-    this.health = 9;
+    this.health = 3;
     this.player = player;
     this.bullets = game.add.group();
     this.bullets.enableBody = true;
@@ -381,6 +381,14 @@ function bulletHitEnemy (Tank, bullet) {
         explosionAnimation.reset(tanksList[Tank.id].tank.x, tanksList[Tank.id].tank.y);
         explosionAnimation.play('kaboom', 30, false, true);
     }
+
+}
+
+function render () {}
+
+function death (id){
+	tanksList[i].kill();
+	console.log(tanksList[i]);
 
 }
 
