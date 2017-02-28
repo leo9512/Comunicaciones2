@@ -7,6 +7,7 @@ var player;
 var tanksList;
 var explosions;
 var logo;
+var logoMuerto;
 var cursors;
 var bullets;
 var fireRate = 100;
@@ -380,16 +381,14 @@ function bulletHitEnemy (Tank, bullet) {
         console.log(explosionAnimation);
         explosionAnimation.reset(tanksList[Tank.id].tank.x, tanksList[Tank.id].tank.y);
         explosionAnimation.play('kaboom', 30, false, true);
+        tanksList[Tank.id].update();
+        logo = game.add.sprite(0, 200, 'logo');
+    	logo.fixedToCamera = true;
     }
 
 }
 
 function render () {}
 
-function death (id){
-	tanksList[i].kill();
-	console.log(tanksList[i]);
-
-}
 
 
