@@ -14,6 +14,9 @@ var fireRate = 100;
 var nextFire = 0;
 var ready = false;
 var eurecaServer;
+var tanquesConVida=1;
+var totalTanques=1;
+var vida=3;
 
 //this function will handle client communication with the server
 var eurecaClientSetup = function() {
@@ -35,26 +38,15 @@ var eurecaClientSetup = function() {
 		eurecaServer.handshake();
 		ready = true;
 	}	
-
-
 	eurecaClient.exports.kill = function(id)
 	{	
-		//game.physics.collide(tanksList[id],bullet, this.imprima,null);
-		//game.physics.arcade.collide(tank, bullet);
 		if (tanksList[id]) {
 			tanksList[id].kill();
+			tanquesConVida -=1;
+			totalTanques -=1;
 			console.log('Aqui mate un tanque ', id, tanksList[id]);
 		}
-		else{
-			console.log('no mate a nadie');
-		}
 	}	
-
-	function imprima(){
-		console.log('aca murio alguien');
-	}
-	
-
 	eurecaClient.exports.spawnEnemy = function(i, x, y)
 	{
 		
@@ -64,6 +56,8 @@ var eurecaClientSetup = function() {
 		console.log(i);
 		var tnk = new Tank(i, game, tank);
 		tanksList[i] = tnk;
+		tanquesConVida +=1;
+		totalTanques +=1;
 		console.log(tanksList);
 	}
 	
@@ -217,6 +211,7 @@ Tank.prototype.update = function() {
 Tank.prototype.damage = function() {
 
     this.health -= 1;
+    vida= this.health;
 
     if (this.health <= 0)
     {
@@ -252,15 +247,16 @@ Tank.prototype.kill = function() {
 	this.tank.kill();
 	this.turret.kill();
 	this.shadow.kill();
+	
 }
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: eurecaClientSetup, update: update, render: render });
+var game = new Phaser.Game(1300, 900, Phaser.AUTO, 'phaser-example', { preload: preload, create: eurecaClientSetup, update: update, render: render });
 
 function preload () {
 
-   // game.load.atlas('tank', 'assets/tanks.png', 'assets/tanks.json');
     game.load.atlas('enemy', 'assets/tanks.png', 'assets/tanks.json'); //el json lo toma como un arreglo y a cada imagen le asigna 
     game.load.image('logo', 'assets/logo.png');
+    game.load.image('gameOver', 'assets/gameover.png');
     game.load.image('bullet', 'assets/bullet.png');
     game.load.image('earth', 'assets/light_grass.png');
     game.load.spritesheet('kaboom', 'assets/explosion.png', 64, 64, 23);
@@ -272,15 +268,13 @@ function preload () {
 function create () {
 
     //  Resize our game world to be a 2000 x 2000 square
-    game.world.setBounds(-1000, -1000, 2000, 2000);
+    game.world.setBounds(-500, -500, 2000, 2000);
 	game.stage.disableVisibilityChange  = true;
-	
     //  Our tiled scrolling background
-    land = game.add.tileSprite(0, 0, 800, 600, 'earth');
+    land = game.add.tileSprite(0, 0, 1300, 900, 'earth');
     land.fixedToCamera = true;
     
-    tanksList = {};
-	
+    tanksList = {};	
 	player = new Tank(myId, game, tank);
 	tanksList[myId] = player;
 	tank = player.tank;
@@ -303,7 +297,7 @@ function create () {
     tank.bringToTop();
     turret.bringToTop();
 		
-    logo = game.add.sprite(0, 200, 'logo');
+    logo = game.add.sprite(300, 325, 'logo');
     logo.fixedToCamera = true;
 
     game.input.onDown.add(removeLogo, this);
@@ -313,7 +307,7 @@ function create () {
     game.camera.focusOnXY(0, 0);
 
     cursors = game.input.keyboard.createCursorKeys();
-	
+
 	setTimeout(removeLogo, 1000);
 	
 }
@@ -326,7 +320,7 @@ function removeLogo () {
 function update () {
 	//do not update if client not ready
 	if (!ready) return;
-	
+	//game.debug.text('Salud: '+vida+ ' / ' + 3, 500, 45);
 	player.input.left = cursors.left.isDown;
 	player.input.right = cursors.right.isDown;
 	player.input.up = cursors.up.isDown;
@@ -340,8 +334,7 @@ function update () {
     land.tilePosition.x = -game.camera.x;
     land.tilePosition.y = -game.camera.y;
 
-    	
-	
+   
     for (var i in tanksList)
     {
 		if (!tanksList[i]) continue;
@@ -349,20 +342,22 @@ function update () {
 		var curTank = tanksList[i].tank;
 		for (var j in tanksList)
 		{
-			
 			if (!tanksList[j]) continue;
 			var targetTank = tanksList[j].tank;
 			
 			if (j!=i) 
 			{
-				game.physics.arcade.overlap(curBullets, targetTank, bulletHitEnemy, null, this);
+				game.physics.arcade.collide(targetTank, tanksList[i].tank);//colisión entre tanques
+				game.physics.arcade.overlap(curBullets, targetTank, bulletHitEnemy, null, this); // si se le da a un tanque con una bala
+				tanksList[i].update();
 
 			}
 
 			if (tanksList[j].alive)
-			{	//game.physics.arcade.collide(tank, tanksList[i]);
+			{	
 				tanksList[j].update();
-			}			
+			}		
+			
 		}
     }
 }
@@ -373,6 +368,7 @@ function bulletHitEnemy (Tank, bullet) {
     bullet.kill();
 
     var destroyed = tanksList[Tank.id].damage();
+    
     console.log( Tank.id);
 
    if (destroyed)
@@ -381,14 +377,20 @@ function bulletHitEnemy (Tank, bullet) {
         console.log(explosionAnimation);
         explosionAnimation.reset(tanksList[Tank.id].tank.x, tanksList[Tank.id].tank.y);
         explosionAnimation.play('kaboom', 30, false, true);
-        tanksList[Tank.id].update();
-        logo = game.add.sprite(0, 200, 'logo');
-    	logo.fixedToCamera = true;
+        if(myId==Tank.id){
+        	logo = game.add.sprite(450, 400, 'gameOver');
+    		logo.fixedToCamera = true; 		
+    	}
+    	tanquesConVida -=1;
+    	tanksList[Tank.id].update();
     }
 
 }
 
-function render () {}
+function render () {
+
+	//game.debug.text('Tanques: ' + tanquesConVida+ ' / ' + totalTanques, 32, 32);
+}
 
 
 
