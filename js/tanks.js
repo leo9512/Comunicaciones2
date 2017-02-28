@@ -250,7 +250,7 @@ Tank.prototype.kill = function() {
 	
 }
 
-var game = new Phaser.Game(1300, 900, Phaser.AUTO, 'phaser-example', { preload: preload, create: eurecaClientSetup, update: update, render: render });
+var game = new Phaser.Game(1000, 700, Phaser.canvas, 'phaser-example', { preload: preload, create: eurecaClientSetup, update: update, render: render });
 
 function preload () {
 
@@ -271,7 +271,7 @@ function create () {
     game.world.setBounds(-500, -500, 2000, 2000);
 	game.stage.disableVisibilityChange  = true;
     //  Our tiled scrolling background
-    land = game.add.tileSprite(0, 0, 1300, 900, 'earth');
+    land = game.add.tileSprite(0, 0, 1000, 700, 'earth');
     land.fixedToCamera = true;
     
     tanksList = {};	
