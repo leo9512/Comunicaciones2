@@ -250,7 +250,7 @@ Tank.prototype.kill = function() {
 	
 }
 
-var game = new Phaser.Game(1000, 700, Phaser.canvas, 'phaser-example', { preload: preload, create: eurecaClientSetup, update: update, render: render });
+var game = new Phaser.Game(1000, 600, Phaser.canvas, 'phaser-example', { preload: preload, create: eurecaClientSetup, update: update, render: render });
 
 function preload () {
 
@@ -271,7 +271,7 @@ function create () {
     game.world.setBounds(-500, -500, 2000, 2000);
 	game.stage.disableVisibilityChange  = true;
     //  Our tiled scrolling background
-    land = game.add.tileSprite(0, 0, 1000, 700, 'earth');
+    land = game.add.tileSprite(0, 0, 1000, 600, 'earth');
     land.fixedToCamera = true;
     
     tanksList = {};	
@@ -297,7 +297,7 @@ function create () {
     tank.bringToTop();
     turret.bringToTop();
 		
-    logo = game.add.sprite(300, 325, 'logo');
+    logo = game.add.sprite(200, 200, 'logo');
     logo.fixedToCamera = true;
 
     game.input.onDown.add(removeLogo, this);
@@ -378,7 +378,7 @@ function bulletHitEnemy (Tank, bullet) {
         explosionAnimation.reset(tanksList[Tank.id].tank.x, tanksList[Tank.id].tank.y);
         explosionAnimation.play('kaboom', 30, false, true);
         if(myId==Tank.id){
-        	logo = game.add.sprite(450, 400, 'gameOver');
+        	logo = game.add.sprite(250, 250, 'gameOver');
     		logo.fixedToCamera = true; 		
     	}
     	tanquesConVida -=1;
